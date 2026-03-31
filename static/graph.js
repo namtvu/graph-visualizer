@@ -1,30 +1,50 @@
-let canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
+let canvas=document.getElementById("canvas");
+let ctx=canvas.getContext("2d");
 
-let nodes = [];
-let edges = [];
-
-let mode = "node";
-let selected = null;
+let nodes=[],edges=[];
+let mode="node";
+let selected=null;
+let dragging=null;
+let startNode=0;
 
 // CLICK
-canvas.onclick = function(e){
-    let x = e.offsetX;
-    let y = e.offsetY;
+canvas.onmousedown=function(e){
+    let x=e.offsetX,y=e.offsetY;
+    let n=findNode(x,y);
 
-    let n = findNode(x,y);
+    if(mode==="move" && n){
+        dragging=n;
+    }
+};
 
-    if(mode === "node"){
-        nodes.push({id: nodes.length, x: x, y: y});
+canvas.onmouseup=function(){
+    dragging=null;
+};
+
+canvas.onmousemove=function(e){
+    if(dragging){
+        dragging.x=e.offsetX;
+        dragging.y=e.offsetY;
+        draw();
+    }
+};
+
+canvas.onclick=function(e){
+    let x=e.offsetX,y=e.offsetY;
+    let n=findNode(x,y);
+
+    if(mode==="node"){
+        nodes.push({id:nodes.length,x,y});
     }
 
-    else if(mode === "edge"){
+    else if(mode==="edge"){
         if(n){
-            if(selected == null){
-                selected = n;
-            } else {
-                edges.push({a:selected.id, b:n.id, w:1});
-                selected = null;
+            if(!selected){
+                selected=n;
+            }else{
+                let w=prompt("Weight:",1);
+                edges.push({a:selected.id,b:n.id,w:parseInt(w)});
+                selected=null;
             }
         }
     }
@@ -32,97 +52,78 @@ canvas.onclick = function(e){
     draw();
 };
 
-// TÌM NODE
 function findNode(x,y){
-    for(let n of nodes){
-        let dx = n.x - x;
-        let dy = n.y - y;
-        if(Math.sqrt(dx*dx + dy*dy) < 25){
-            return n;
-        }
-    }
-    return null;
+    return nodes.find(n=>Math.hypot(n.x-x,n.y-y)<25);
 }
 
-// VẼ
+function setMode(m){mode=m;selected=null;}
+
+function setStart(){
+    let id=prompt("Start node id:");
+    startNode=parseInt(id);
+    draw();
+}
+
+function buildGraph(){
+    let g={};
+    for(let n of nodes) g[n.id]=[];
+    for(let e of edges){
+        g[e.a].push({v:e.b,w:e.w});
+        g[e.b].push({v:e.a,w:e.w});
+    }
+    return g;
+}
+
 function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     // edges
     for(let e of edges){
-        let a = nodes[e.a];
-        let b = nodes[e.b];
-
+        let a=nodes[e.a],b=nodes[e.b];
         ctx.beginPath();
         ctx.moveTo(a.x,a.y);
         ctx.lineTo(b.x,b.y);
-        ctx.strokeStyle = "#333";
-        ctx.lineWidth = 2;
         ctx.stroke();
+
+        // weight
+        let mx=(a.x+b.x)/2;
+        let my=(a.y+b.y)/2;
+        ctx.fillText(e.w,mx,my);
     }
 
     // nodes
     for(let n of nodes){
         ctx.beginPath();
         ctx.arc(n.x,n.y,18,0,2*Math.PI);
-        ctx.fillStyle = "#3498db";
+
+        if(n.id===startNode) ctx.fillStyle="orange";
+        else ctx.fillStyle="#3498db";
+
         ctx.fill();
 
-        ctx.fillStyle = "white";
-        ctx.font = "14px Arial";
-        ctx.fillText(n.id, n.x-4, n.y+4);
+        ctx.fillStyle="white";
+        ctx.fillText(n.id,n.x-4,n.y+4);
     }
 
-    // highlight selected
     if(selected){
         ctx.beginPath();
-        ctx.arc(selected.x, selected.y, 22, 0, 2*Math.PI);
-        ctx.strokeStyle = "orange";
-        ctx.lineWidth = 3;
+        ctx.arc(selected.x,selected.y,22,0,2*Math.PI);
+        ctx.strokeStyle="red";
         ctx.stroke();
     }
 }
 
-// MODE
-function setMode(m){
-    mode = m;
-    selected = null;
-}
-
-// GRAPH
-function buildGraph(){
-    let g = {};
-    for(let n of nodes){
-        g[n.id] = [];
-    }
-
-    for(let e of edges){
-        g[e.a].push(e.b);
-        g[e.b].push(e.a);
-    }
-
-    return g;
-}
-
-// HIGHLIGHT NODE
 function highlight(id){
-    let n = nodes[id];
-
+    let n=nodes[id];
     ctx.beginPath();
-    ctx.arc(n.x,n.y,22,0,2*Math.PI);
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 3;
+    ctx.arc(n.x,n.y,24,0,2*Math.PI);
+    ctx.strokeStyle="red";
+    ctx.lineWidth=3;
     ctx.stroke();
 }
 
-// CLEAR
 function clearGraph(){
-    nodes = [];
-    edges = [];
-    selected = null;
-
-    document.getElementById("dataBox").innerText = "";
-    document.getElementById("resultBox").innerText = "";
-
+    nodes=[];edges=[];selected=null;
+    updateData("");showResult("");
     draw();
 }
