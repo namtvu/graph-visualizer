@@ -1,0 +1,51 @@
+function runDijkstra(){
+    let g = buildGraph();
+
+    let dist = {};
+    let visited = new Set();
+
+    for(let n of nodes){
+        dist[n.id] = Infinity;
+    }
+
+    dist[0] = 0;
+
+    showCode(`Dijkstra(G,s)
+1 set dist[s]=0
+2 repeat
+3   pick min dist node
+4   relax neighbors`);
+
+    function step(){
+
+        let u = null;
+
+        for(let v in dist){
+            if(!visited.has(v)){
+                if(u == null || dist[v] < dist[u]){
+                    u = v;
+                }
+            }
+        }
+
+        if(u == null){
+            updateData("Done");
+            return;
+        }
+
+        visited.add(u);
+        highlight(u);
+
+        for(let v of g[u]){
+            if(dist[u] + 1 < dist[v]){
+                dist[v] = dist[u] + 1;
+            }
+        }
+
+        updateData(JSON.stringify(dist));
+
+        setTimeout(step,900);
+    }
+
+    step();
+}

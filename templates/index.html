@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Graph Algorithm Visualizer</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<h1>Graph Algorithm Visualizer</h1>
+
+<div class="toolbar">
+
+<button onclick="modeNode()">Add Node</button>
+<button onclick="modeEdge()">Add Edge</button>
+
+<button onclick="runBFS()">BFS</button>
+<button onclick="runDFS()">DFS</button>
+<button onclick="runDijkstra()">Dijkstra</button>
+
+<button onclick="clearGraph()">Clear</button>
+
+</div>
+
+<div class="layout">
+
+<div class="leftPanel">
+
+<h3>Pseudocode</h3>
+
+<pre id="codeBox"></pre>
+
+<h3>Queue / Stack</h3>
+
+<div id="dataBox"></div>
+
+</div>
+
+<canvas id="canvas" width="900" height="550"></canvas>
+
+</div>
+
+<script src="/static/graph.js"></script>
+<script src="/static/animation.js"></script>
+<script src="/static/bfs.js"></script>
+<script src="/static/dfs.js"></script>
+<script src="/static/dijkstra.js"></script>
+<script src="/static/ui.js"></script>
+
+</body>
+
+</html>
