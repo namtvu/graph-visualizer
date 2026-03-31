@@ -105,5 +105,5 @@ function clearGraph(){
 function setMode(m){
     mode = m;
     selected = null;
-    console.log("Mode:", mode); // 👈 thêm dòng này
+    console.log("Mode:", mode); 
 }
