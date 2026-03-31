@@ -7,9 +7,13 @@ let edges = [];
 let mode = "node";
 let selected = null;
 let dragging = null;
-let startNode = 0;
 
-// ===== MOUSE DOWN (drag start)
+let startNode = 1;
+let endNode = null;
+
+let pathEdges = []; // lưu cạnh đường đi ngắn nhất
+
+// ===== DRAG =====
 canvas.onmousedown = function(e){
     let n = findNode(e.offsetX, e.offsetY);
     if(mode === "move" && n){
@@ -17,7 +21,6 @@ canvas.onmousedown = function(e){
     }
 };
 
-// ===== MOUSE MOVE (dragging)
 canvas.onmousemove = function(e){
     if(dragging){
         dragging.x = e.offsetX;
@@ -26,12 +29,11 @@ canvas.onmousemove = function(e){
     }
 };
 
-// ===== MOUSE UP (stop drag)
 canvas.onmouseup = function(){
     dragging = null;
 };
 
-// ===== CLICK (node / edge)
+// ===== CLICK =====
 canvas.onclick = function(e){
     let x = e.offsetX;
     let y = e.offsetY;
@@ -39,7 +41,7 @@ canvas.onclick = function(e){
     let n = findNode(x,y);
 
     if(mode === "node"){
-        nodes.push({id: nodes.length, x, y});
+        nodes.push({id: nodes.length + 1, x, y}); // 👈 bắt đầu từ 1
     }
 
     else if(mode === "edge"){
@@ -47,9 +49,7 @@ canvas.onclick = function(e){
             if(!selected){
                 selected = n;
             }else{
-                let w = prompt("Nhập trọng số:", "1");
-                w = parseInt(w);
-
+                let w = parseInt(prompt("Trọng số:", "1"));
                 if(isNaN(w)) w = 1;
 
                 edges.push({a:selected.id, b:n.id, w});
@@ -61,25 +61,30 @@ canvas.onclick = function(e){
     draw();
 };
 
-// ===== FIND NODE
+// ===== FIND NODE =====
 function findNode(x,y){
-    return nodes.find(n => Math.hypot(n.x - x, n.y - y) < 25);
+    return nodes.find(n => Math.hypot(n.x-x, n.y-y) < 25);
 }
 
-// ===== MODE
+// ===== MODE =====
 function setMode(m){
     mode = m;
     selected = null;
 }
 
-// ===== SET START
+// ===== SET START =====
 function setStart(){
-    let id = prompt("Chọn node bắt đầu:");
-    startNode = parseInt(id);
+    startNode = parseInt(prompt("Nhập đỉnh bắt đầu:"));
     draw();
 }
 
-// ===== BUILD GRAPH (CÓ TRỌNG SỐ)
+// ===== SET END =====
+function setEnd(){
+    endNode = parseInt(prompt("Nhập đỉnh kết thúc:"));
+    draw();
+}
+
+// ===== BUILD GRAPH =====
 function buildGraph(){
     let g = {};
 
@@ -95,23 +100,34 @@ function buildGraph(){
     return g;
 }
 
-// ===== DRAW
+// ===== DRAW =====
 function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     // edges
     for(let e of edges){
-        let a = nodes[e.a];
-        let b = nodes[e.b];
+        let a = nodes.find(n=>n.id===e.a);
+        let b = nodes.find(n=>n.id===e.b);
+
+        // highlight path
+        let isPath = pathEdges.some(p => 
+            (p.a===e.a && p.b===e.b) || (p.a===e.b && p.b===e.a)
+        );
 
         ctx.beginPath();
         ctx.moveTo(a.x,a.y);
         ctx.lineTo(b.x,b.y);
+
+        ctx.strokeStyle = isPath ? "red" : "#333";
+        ctx.lineWidth = isPath ? 4 : 2;
         ctx.stroke();
 
-        // weight
-        let mx = (a.x + b.x)/2;
-        let my = (a.y + b.y)/2;
+        // weight (màu đen)
+        let mx = (a.x+b.x)/2;
+        let my = (a.y+b.y)/2;
+
+        ctx.fillStyle = "black";
+        ctx.font = "14px Arial";
         ctx.fillText(e.w, mx, my);
     }
 
@@ -121,15 +137,15 @@ function draw(){
         ctx.arc(n.x,n.y,18,0,2*Math.PI);
 
         if(n.id === startNode) ctx.fillStyle = "orange";
+        else if(n.id === endNode) ctx.fillStyle = "green";
         else ctx.fillStyle = "#3498db";
 
         ctx.fill();
 
         ctx.fillStyle = "white";
-        ctx.fillText(n.id, n.x-4, n.y+4);
+        ctx.fillText(n.id, n.x-6, n.y+4);
     }
 
-    // selected
     if(selected){
         ctx.beginPath();
         ctx.arc(selected.x, selected.y, 22, 0, 2*Math.PI);
@@ -138,25 +154,12 @@ function draw(){
     }
 }
 
-// ===== HIGHLIGHT
-function highlight(id){
-    let n = nodes[id];
-
-    ctx.beginPath();
-    ctx.arc(n.x,n.y,24,0,2*Math.PI);
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 3;
-    ctx.stroke();
-}
-
-// ===== CLEAR
+// ===== CLEAR =====
 function clearGraph(){
     nodes = [];
     edges = [];
-    selected = null;
-
+    pathEdges = [];
     updateData("");
     showResult("");
-
     draw();
 }
