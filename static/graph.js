@@ -1,165 +1,111 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-let nodes = [];
-let edges = [];
+let nodes=[], edges=[];
+let mode="node", selected=null, dragging=null;
 
-let mode = "node";
-let selected = null;
-let dragging = null;
+let startNode=1, endNode=null;
+let pathEdges=[];
 
-let startNode = 1;
-let endNode = null;
-
-let pathEdges = []; // lưu cạnh đường đi ngắn nhất
-
-// ===== DRAG =====
-canvas.onmousedown = function(e){
-    let n = findNode(e.offsetX, e.offsetY);
-    if(mode === "move" && n){
-        dragging = n;
-    }
+// DRAG
+canvas.onmousedown=e=>{
+    let n=findNode(e.offsetX,e.offsetY);
+    if(mode==="move" && n) dragging=n;
 };
-
-canvas.onmousemove = function(e){
+canvas.onmousemove=e=>{
     if(dragging){
-        dragging.x = e.offsetX;
-        dragging.y = e.offsetY;
+        dragging.x=e.offsetX;
+        dragging.y=e.offsetY;
         draw();
     }
 };
+canvas.onmouseup=()=>dragging=null;
 
-canvas.onmouseup = function(){
-    dragging = null;
-};
+// CLICK
+canvas.onclick=e=>{
+    let x=e.offsetX,y=e.offsetY;
+    let n=findNode(x,y);
 
-// ===== CLICK =====
-canvas.onclick = function(e){
-    let x = e.offsetX;
-    let y = e.offsetY;
-
-    let n = findNode(x,y);
-
-    if(mode === "node"){
-        nodes.push({id: nodes.length + 1, x, y}); // 👈 bắt đầu từ 1
+    if(mode==="node"){
+        nodes.push({id:nodes.length+1,x,y});
     }
-
-    else if(mode === "edge"){
+    else if(mode==="edge"){
         if(n){
-            if(!selected){
-                selected = n;
-            }else{
-                let w = parseInt(prompt("Trọng số:", "1"));
-                if(isNaN(w)) w = 1;
-
-                edges.push({a:selected.id, b:n.id, w});
-                selected = null;
+            if(!selected) selected=n;
+            else{
+                let w=parseInt(prompt("Weight:",1));
+                if(isNaN(w)) w=1;
+                edges.push({a:selected.id,b:n.id,w});
+                selected=null;
             }
         }
     }
-
     draw();
 };
 
-// ===== FIND NODE =====
 function findNode(x,y){
-    return nodes.find(n => Math.hypot(n.x-x, n.y-y) < 25);
+    return nodes.find(n=>Math.hypot(n.x-x,n.y-y)<25);
 }
 
-// ===== MODE =====
-function setMode(m){
-    mode = m;
-    selected = null;
-}
+function setMode(m){mode=m;selected=null;}
 
-// ===== SET START =====
 function setStart(){
-    startNode = parseInt(prompt("Nhập đỉnh bắt đầu:"));
+    startNode=parseInt(prompt("Start node:"));
     draw();
 }
-
-// ===== SET END =====
 function setEnd(){
-    endNode = parseInt(prompt("Nhập đỉnh kết thúc:"));
+    endNode=parseInt(prompt("End node:"));
     draw();
 }
 
-// ===== BUILD GRAPH =====
 function buildGraph(){
-    let g = {};
-
-    for(let n of nodes){
-        g[n.id] = [];
-    }
-
-    for(let e of edges){
-        g[e.a].push({v:e.b, w:e.w});
-        g[e.b].push({v:e.a, w:e.w});
-    }
-
+    let g={};
+    nodes.forEach(n=>g[n.id]=[]);
+    edges.forEach(e=>{
+        g[e.a].push({v:e.b,w:e.w});
+        g[e.b].push({v:e.a,w:e.w});
+    });
     return g;
 }
 
-// ===== DRAW =====
 function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    // edges
-    for(let e of edges){
-        let a = nodes.find(n=>n.id===e.a);
-        let b = nodes.find(n=>n.id===e.b);
+    edges.forEach(e=>{
+        let a=nodes.find(n=>n.id===e.a);
+        let b=nodes.find(n=>n.id===e.b);
 
-        // highlight path
-        let isPath = pathEdges.some(p => 
-            (p.a===e.a && p.b===e.b) || (p.a===e.b && p.b===e.a)
+        let isPath=pathEdges.some(p=>
+            (p.a===e.a&&p.b===e.b)||(p.a===e.b&&p.b===e.a)
         );
 
         ctx.beginPath();
         ctx.moveTo(a.x,a.y);
         ctx.lineTo(b.x,b.y);
-
-        ctx.strokeStyle = isPath ? "red" : "#333";
-        ctx.lineWidth = isPath ? 4 : 2;
+        ctx.strokeStyle=isPath?"red":"#333";
+        ctx.lineWidth=isPath?4:2;
         ctx.stroke();
 
-        // weight (màu đen)
-        let mx = (a.x+b.x)/2;
-        let my = (a.y+b.y)/2;
+        ctx.fillStyle="black";
+        ctx.fillText(e.w,(a.x+b.x)/2,(a.y+b.y)/2);
+    });
 
-        ctx.fillStyle = "black";
-        ctx.font = "14px Arial";
-        ctx.fillText(e.w, mx, my);
-    }
-
-    // nodes
-    for(let n of nodes){
+    nodes.forEach(n=>{
         ctx.beginPath();
         ctx.arc(n.x,n.y,18,0,2*Math.PI);
 
-        if(n.id === startNode) ctx.fillStyle = "orange";
-        else if(n.id === endNode) ctx.fillStyle = "green";
-        else ctx.fillStyle = "#3498db";
+        if(n.id===startNode) ctx.fillStyle="orange";
+        else if(n.id===endNode) ctx.fillStyle="green";
+        else ctx.fillStyle="#3498db";
 
         ctx.fill();
-
-        ctx.fillStyle = "white";
-        ctx.fillText(n.id, n.x-6, n.y+4);
-    }
-
-    if(selected){
-        ctx.beginPath();
-        ctx.arc(selected.x, selected.y, 22, 0, 2*Math.PI);
-        ctx.strokeStyle = "red";
-        ctx.stroke();
-    }
+        ctx.fillStyle="white";
+        ctx.fillText(n.id,n.x-5,n.y+4);
+    });
 }
 
-// ===== CLEAR =====
 function clearGraph(){
-    nodes = [];
-    edges = [];
-    pathEdges = [];
-    updateData("");
-    showResult("");
+    nodes=[];edges=[];pathEdges=[];
+    updateData("");showResult("");
     draw();
 }
