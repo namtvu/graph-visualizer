@@ -1,100 +1,86 @@
 function runDijkstraAll(){
     runDijkstra(false);
 }
-
 function runDijkstraXY(){
     runDijkstra(true);
 }
 
 function runDijkstra(findPath){
 
-    let g = buildGraph();
-    let dist = {}, prev = {};
-    let visited = new Set();
+    showCode(`Dijkstra(G,s)
+1 dist[s]=0
+2 repeat
+3  pick min node
+4  relax edges`);
 
-    for(let n of nodes){
-        dist[n.id] = Infinity;
-        prev[n.id] = null;
-    }
+    let g=buildGraph();
+    let dist={},prev={},visited=new Set();
 
-    dist[startNode] = 0;
-    pathEdges = [];
+    nodes.forEach(n=>{
+        dist[n.id]=Infinity;
+        prev[n.id]=null;
+    });
+
+    dist[startNode]=0;
+    pathEdges=[];
 
     function step(){
 
-        let u = null;
+        let u=null;
 
         for(let v in dist){
             if(!visited.has(v)){
-                if(u === null || dist[v] < dist[u]){
-                    u = v;
-                }
+                if(u===null||dist[v]<dist[u]) u=v;
             }
         }
 
-        if(u === null){
-            if(findPath){
-                showPath(prev);
-            }else{
-                showAll(dist, prev);
-            }
+        if(u===null){
+            if(findPath) showPath(prev);
+            else showAll(dist,prev);
             return;
         }
 
         visited.add(u);
 
-        for(let edge of g[u]){
-            let v = edge.v;
-            let w = edge.w;
-
-            if(dist[u] + w < dist[v]){
-                dist[v] = dist[u] + w;
-                prev[v] = u;
+        for(let e of g[u]){
+            if(dist[u]+e.w < dist[e.v]){
+                dist[e.v]=dist[u]+e.w;
+                prev[e.v]=u;
             }
         }
 
-        updateData("Dist: " + JSON.stringify(dist));
-        setTimeout(step, 600);
+        updateData(JSON.stringify(dist));
+        setTimeout(step,600);
     }
 
     step();
 }
 
-// ===== BUILD PATH
-function buildPath(prev, v){
-    let path = [];
-
-    while(v !== null){
+function buildPath(prev,v){
+    let path=[];
+    while(v!==null){
         path.push(v);
-        v = prev[v];
+        v=prev[v];
     }
-
     return path.reverse();
 }
 
-// ===== SHOW ALL (FIX Ở ĐÂY)
-function showAll(dist, prev){
-    let res = "";
-
+function showAll(dist,prev){
+    let res="";
     for(let v in dist){
-        let path = buildPath(prev, v);
-        res += "Node " + v + ": " + dist[v] +
-               " | Path: " + path.join(" → ") + "\n";
+        res+=`Node ${v}: ${dist[v]} | Path: ${buildPath(prev,v).join("→")}\n`;
     }
-
     showResult(res);
 }
 
-// ===== SHOW PATH XY
 function showPath(prev){
-    let path = buildPath(prev, endNode);
+    let path=buildPath(prev,endNode);
 
-    pathEdges = [];
-
+    pathEdges=[];
     for(let i=0;i<path.length-1;i++){
-        pathEdges.push({a:path[i], b:path[i+1]});
+        pathEdges.push({a:path[i],b:path[i+1]});
     }
 
-    showResult("Shortest Path: " + path.join(" → "));
+    showResult("Path: "+path.join(" → "));
     draw();
 }
