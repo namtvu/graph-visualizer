@@ -1,38 +1,30 @@
 function runDFS(){
     let g = buildGraph();
+    if(nodes.length === 0) return;
 
-    let visited = new Set();
-    let stack = [0];
-
-    showCode(`DFS(G,s)
-1 push s
-2 while stack not empty
-3   v = pop
-4   visit v
-5   push neighbors`);
+    let visited=new Set();
+    let stack=[0];
 
     function step(){
-        if(stack.length === 0){
-            updateData([]);
+        if(stack.length===0){
+            updateData("Done");
             return;
         }
 
-        updateData(stack);
+        updateData(JSON.stringify(stack));
 
-        let v = stack.pop();
+        let v=stack.pop();
 
         if(!visited.has(v)){
             visited.add(v);
             highlight(v);
 
             for(let u of g[v]){
-                if(!visited.has(u)){
-                    stack.push(u);
-                }
+                if(!visited.has(u)) stack.push(u);
             }
         }
 
-        setTimeout(step,800);
+        setTimeout(step,700);
     }
 
     step();
