@@ -1,42 +1,39 @@
 function runBFS(){
-    let g = buildGraph();
-    if(nodes.length === 0) return;
-
-    let visited = new Set();
-    let queue = [0];
-    let order = [];
 
     showCode(`BFS(G,s)
 1 enqueue s
 2 while queue not empty
-3   v = dequeue
-4   visit v
-5   enqueue neighbors`);
+3   u = dequeue
+4   for neighbors v
+5     if not visited
+6       enqueue v`);
+
+    let g=buildGraph();
+    let visited=new Set();
+    let queue=[startNode];
+    let order=[];
 
     function step(){
-        if(queue.length === 0){
-            updateData("Done");
-            showResult("BFS Order: " + order.join(" → "));
+        if(queue.length===0){
+            showResult("BFS: "+order.join(" → "));
             return;
         }
 
-        updateData("Queue: " + JSON.stringify(queue));
+        let u=queue.shift();
 
-        let v = queue.shift();
+        if(!visited.has(u)){
+            visited.add(u);
+            order.push(u);
 
-        if(!visited.has(v)){
-            visited.add(v);
-            order.push(v);
-            highlight(v);
-
-            for(let u of g[v]){
-                if(!visited.has(u)){
-                    queue.push(u);
+            for(let e of g[u]){
+                if(!visited.has(e.v)){
+                    queue.push(e.v);
                 }
             }
         }
 
-        setTimeout(step,700);
+        updateData("Queue: "+queue.join(","));
+        setTimeout(step,500);
     }
 
     step();
