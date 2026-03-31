@@ -12,20 +12,25 @@ canvas.onclick = function(e){
     let x = e.offsetX;
     let y = e.offsetY;
 
+    let n = findNode(x,y);
+
     if(mode === "node"){
         nodes.push({id: nodes.length, x: x, y: y});
     }
-    else{
-        let n = findNode(x,y);
+
+    else if(mode === "edge"){
         if(n){
             if(selected == null){
                 selected = n;
+                console.log("Selected:", n.id);
             } else {
                 edges.push({a:selected.id, b:n.id, w:1});
+                console.log("Edge:", selected.id, "->", n.id);
                 selected = null;
             }
         }
     }
+
     draw();
 }
 
