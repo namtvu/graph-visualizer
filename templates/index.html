@@ -26,17 +26,20 @@ canvas{border:2px solid black;background:white;}
 <div class="toolbar">
 <button onclick="setMode('node')">Add Node</button>
 <button onclick="setMode('edge')">Add Edge</button>
-
-
-<button onclick="runDijkstra()">Dijkstra</button>
-<button onclick="clearGraph()">Clear</button>
-
-<button onclick="setMode('move')">Move</button>
+<button onclick="setMode('move')">Move</button> 
+<button onclick="runBFS()">BFS</button>
+<button onclick="runDFS()">DFS</button>
 <button onclick="setStart()">Set Start</button>
 <button onclick="setEnd()">Set End</button>
 
 <button onclick="runDijkstraAll()">Dijkstra (All)</button>
-<button onclick="runDijkstraXY()">Dijkstra (x → y)</button>
+<button onclick="runDijkstraXY()">Dijkstra (x → y)</button>    
+<button onclick="clearGraph()">Clear</button>
+
+
+
+
+
 
     
 </div>
@@ -57,6 +60,8 @@ canvas{border:2px solid black;background:white;}
 </div>
 
 <script src="/static/graph.js"></script>
+<script src="/static/bfs.js"></script>
+<script src="/static/dfs.js"></script>
 <script src="/static/dijkstra.js"></script>
 
 <script>
