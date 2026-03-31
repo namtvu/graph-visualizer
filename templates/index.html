@@ -2,115 +2,60 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Graph Algorithm Visualizer</title>
+<title>Graph Visualizer Pro</title>
 
 <style>
-body{
-    font-family: Arial;
-    text-align: center;
-    background: #f2f2f2;
+body{font-family:Arial;background:#f2f2f2;text-align:center;}
+.toolbar button{margin:5px;padding:10px;border:none;background:#3498db;color:white;border-radius:6px;}
+.toolbar button:hover{background:#2980b9;}
+.layout{display:flex;justify-content:center;margin-top:10px;}
+.panel{width:320px;margin-right:15px;}
+#codeBox,#dataBox,#resultBox{
+    background:white;border:1px solid #333;
+    padding:10px;margin-top:10px;text-align:left;
 }
-
-h2{
-    margin-top: 10px;
-}
-
-.toolbar button{
-    padding:10px 15px;
-    margin:5px;
-    border:none;
-    background:#3498db;
-    color:white;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-.toolbar button:hover{
-    background:#2980b9;
-}
-
-.layout{
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    margin-top:15px;
-}
-
-.panel{
-    width:300px;
-    margin-right:20px;
-}
-
-#codeBox, #dataBox, #resultBox{
-    background:white;
-    border:1px solid #333;
-    padding:10px;
-    margin-top:10px;
-    text-align:left;
-}
-
-#resultBox{
-    border:2px solid #e74c3c;
-    font-weight:bold;
-    color:#c0392b;
-}
-
-canvas{
-    border:2px solid black;
-    background:white;
-}
+#resultBox{border:2px solid red;font-weight:bold;}
+canvas{border:2px solid black;background:white;}
 </style>
 </head>
 
 <body>
 
-<h2>Graph Algorithm Visualizer</h2>
+<h2>Graph Visualizer (Visualgo Style)</h2>
 
 <div class="toolbar">
-    <button onclick="setMode('node')">Add Node</button>
-    <button onclick="setMode('edge')">Add Edge</button>
+<button onclick="setMode('node')">Add Node</button>
+<button onclick="setMode('edge')">Add Edge</button>
+<button onclick="setMode('move')">Move</button>
 
-    <button onclick="runBFS()">Run BFS</button>
-    <button onclick="runDFS()">Run DFS</button>
-    <button onclick="runDijkstra()">Run Dijkstra</button>
+<button onclick="setStart()">Set Start</button>
 
-    <button onclick="clearGraph()">Clear</button>
+<button onclick="runDijkstra()">Dijkstra</button>
+<button onclick="clearGraph()">Clear</button>
 </div>
 
 <div class="layout">
-
 <div class="panel">
-    <h3>Pseudocode</h3>
-    <pre id="codeBox"></pre>
+<h3>Pseudocode</h3>
+<pre id="codeBox"></pre>
 
-    <h3>Process Data</h3>
-    <div id="dataBox"></div>
+<h3>Process</h3>
+<div id="dataBox"></div>
 
-    <h3>Final Result</h3>
-    <div id="resultBox"></div>
+<h3>Result</h3>
+<div id="resultBox"></div>
 </div>
 
 <canvas id="canvas" width="900" height="550"></canvas>
-
 </div>
 
 <script src="/static/graph.js"></script>
-<script src="/static/bfs.js"></script>
-<script src="/static/dfs.js"></script>
 <script src="/static/dijkstra.js"></script>
 
 <script>
-function updateData(data){
-    document.getElementById("dataBox").innerText = data;
-}
-
-function showCode(code){
-    document.getElementById("codeBox").innerText = code;
-}
-
-function showResult(result){
-    document.getElementById("resultBox").innerText = result;
-}
+function updateData(d){document.getElementById("dataBox").innerText=d;}
+function showCode(c){document.getElementById("codeBox").innerText=c;}
+function showResult(r){document.getElementById("resultBox").innerText=r;}
 </script>
 
 </body>
