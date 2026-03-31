@@ -2,16 +2,64 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Graph Visualizer</title>
+<title>Graph Algorithm Visualizer</title>
 
 <style>
-body{font-family:Arial;text-align:center;background:#f2f2f2;}
-.toolbar button{padding:10px;margin:5px;}
-.layout{display:flex;justify-content:center;}
-#codeBox,#dataBox{background:white;border:1px solid #333;padding:10px;margin:5px;}
-canvas{border:2px solid black;background:white;}
-</style>
+body{
+    font-family: Arial;
+    text-align: center;
+    background: #f2f2f2;
+}
 
+h2{
+    margin-top: 10px;
+}
+
+.toolbar button{
+    padding:10px 15px;
+    margin:5px;
+    border:none;
+    background:#3498db;
+    color:white;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.toolbar button:hover{
+    background:#2980b9;
+}
+
+.layout{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    margin-top:15px;
+}
+
+.panel{
+    width:300px;
+    margin-right:20px;
+}
+
+#codeBox, #dataBox, #resultBox{
+    background:white;
+    border:1px solid #333;
+    padding:10px;
+    margin-top:10px;
+    text-align:left;
+}
+
+#resultBox{
+    border:2px solid #e74c3c;
+    font-weight:bold;
+    color:#c0392b;
+}
+
+canvas{
+    border:2px solid black;
+    background:white;
+}
+</style>
 </head>
 
 <body>
@@ -19,25 +67,31 @@ canvas{border:2px solid black;background:white;}
 <h2>Graph Algorithm Visualizer</h2>
 
 <div class="toolbar">
-<button onclick="setMode('node')">Add Node</button>
-<button onclick="setMode('edge')">Add Edge</button>
-<button onclick="runBFS()">BFS</button>
-<button onclick="runDFS()">DFS</button>
-<button onclick="runDijkstra()">Dijkstra</button>
-<button onclick="clearGraph()">Clear</button>
+    <button onclick="setMode('node')">Add Node</button>
+    <button onclick="setMode('edge')">Add Edge</button>
+
+    <button onclick="runBFS()">Run BFS</button>
+    <button onclick="runDFS()">Run DFS</button>
+    <button onclick="runDijkstra()">Run Dijkstra</button>
+
+    <button onclick="clearGraph()">Clear</button>
 </div>
 
 <div class="layout">
-<div>
-<h3>Pseudocode</h3>
-<pre id="codeBox"></pre>
 
-<h3>Data</h3>
-<div id="dataBox"></div>
+<div class="panel">
+    <h3>Pseudocode</h3>
+    <pre id="codeBox"></pre>
+
+    <h3>Process Data</h3>
+    <div id="dataBox"></div>
+
+    <h3>Final Result</h3>
+    <div id="resultBox"></div>
 </div>
-<h3>Final Result</h3>
-<div id="resultBox" style="border:2px solid #e74c3c; padding:10px; background:#fff3f3;"></div>
-<canvas id="canvas" width="800" height="500"></canvas>
+
+<canvas id="canvas" width="900" height="550"></canvas>
+
 </div>
 
 <script src="/static/graph.js"></script>
