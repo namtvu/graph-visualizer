@@ -81,6 +81,6 @@ function showPath(prev){
         pathEdges.push({a:path[i],b:path[i+1]});
     }
 
-    showResult("Path: "+path.join(" → "));
+    showResult("Đường đi: "+path.join(" → "));
     draw();
 }
